@@ -1,0 +1,599 @@
+package GUI;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.BoxLayout;
+import javax.swing.JCheckBox;
+import javax.swing.JFrame;
+import static GUI.accessDatabase.MySQLDatabase_obj;
+import static GUI.accessDatabase.SQLServerDatabase_obj;
+import static GUI.accessDatabase.databaseName;
+import static GUI.accessDatabase.databaseServer;
+import static GUI.accessDatabase.database_con;
+import static GUI.pivotDataSource.inputFileName;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+
+/**
+ *
+ * @author GroupC, Apr.16.2017
+ */
+public class SelectDatabaseTable extends javax.swing.JFrame {
+
+    public static String[][] diaplay2D_data = new String[0][0];
+    public String[][] tableSchema = new String[0][0];
+    public static String[][] tableDisplay = new String[0][0];
+    public String[] tables = new String[0];
+    public String[] Join_Type = {"Inner Join", "Outer Join"};
+    static int[] joinFieldSelection = new int[0];
+    List<Integer> joinTableArray = new ArrayList<Integer>();
+
+    /**
+     * Creates new form selectTable
+     */
+    public SelectDatabaseTable() {
+        initComponents();
+        databaseTable();
+    }
+
+    public void databaseTable() {
+        ArrayList<String> sb = new ArrayList<String>();
+        if (databaseServer == 0) {
+            try {
+                // display all tables in the database:
+                sb = SQLServerDatabase_obj.showTables(database_con, databaseName);
+
+                sb.removeAll(Arrays.asList("", null, "\n"));
+                String[] tablesArray = new String[sb.size()];
+                int j = 0;
+                for (String i : sb) {
+                    String tirmed_i = i.replaceAll(";$", "");
+                    tablesArray[j] = tirmed_i;
+                    j++;
+                }
+                //tables = new String[tablesArray.length];
+                tables = tablesArray;
+            } catch (SQLException ex) {
+                Logger.getLogger(SelectDatabaseTable.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else {
+            try {
+                // display all tables in the database:
+                sb = MySQLDatabase_obj.showTables(database_con, databaseName);
+
+                sb.removeAll(Arrays.asList("", null, "\n"));
+                String[] tablesArray = new String[sb.size()];
+                int j = 0;
+                for (String i : sb) {
+                    String tirmed_i = i.replaceAll(";$", "");
+                    tablesArray[j] = tirmed_i;
+                    j++;
+                }
+                //tables = new String[tablesArray.length];
+                tables = tablesArray;
+            } catch (SQLException ex) {
+                Logger.getLogger(SelectDatabaseTable.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        // create check boxes for JOIN tables
+        JCheckBox cb_tables[] = new JCheckBox[tables.length];
+        jPanel3.setLayout(new BoxLayout(jPanel3, BoxLayout.Y_AXIS));
+        for (int i = 0; i < tables.length; i++) {
+            cb_tables[i] = new JCheckBox(tables[i]);
+            //            jPanel3.add(new JCheckBox(tables[i]));
+            jPanel3.add(cb_tables[i]);
+        }
+        // drop-down box for selecting tables
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(tables));
+        // drop-down box for selecting join types
+        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel(Join_Type));
+        String twoLines = "Generate\n Pivot Table";
+        jButton5.setText("<html>" + twoLines.replaceAll("\\n", "<br>") + "</html>");
+        jTextField2.setText("Type customized query here:");
+        // jCheckBox event for page, row and column fields displaying
+        for (int i = 0; i < tables.length; i++) {
+
+            cb_tables[i].addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    joinTableArray = new ArrayList<Integer>();
+                    for (int i = 0; i < tables.length; i++) {
+                        if (cb_tables[i].isSelected()) {
+                            joinTableArray.add(i);
+                        }
+                    }
+                    joinFieldSelection = new int[joinTableArray.size()];
+                    for (int j = 0; j < joinTableArray.size(); j++) {
+                        joinFieldSelection[j] = joinTableArray.get(j).intValue();
+                    }
+                }
+            });
+        }
+
+    }
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jPanel1 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        jComboBox1 = new javax.swing.JComboBox();
+        jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
+        jLabel2 = new javax.swing.JLabel();
+        jPanel4 = new javax.swing.JPanel();
+        jComboBox2 = new javax.swing.JComboBox();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jTextField1 = new javax.swing.JTextField();
+        jLabel5 = new javax.swing.JLabel();
+        jTextField2 = new javax.swing.JTextField();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
+        jButton5 = new javax.swing.JButton();
+        jButton4 = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jPanel3 = new javax.swing.JPanel();
+        jButton6 = new javax.swing.JButton();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        jLabel1.setText("Select Table:");
+
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[]{"Item 1", "Item 2", "Item 3", "Item 4"}));
+
+        jButton1.setText("Show Table");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        jButton2.setText("Show Schema");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
+        jButton3.setText("Show All");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+                jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addGap(23, 23, 23)
+                                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addContainerGap()
+                                        .addComponent(jLabel1)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jButton3)
+                                .addComponent(jButton1)
+                                .addComponent(jButton2)))
+        );
+
+        jPanel1Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[]{jButton1, jButton2, jButton3});
+
+        jPanel1Layout.setVerticalGroup(
+                jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jButton1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton3)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jLabel2.setText("Select tables to merge:");
+
+        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel(new String[]{"Item 1", "Item 2", "Item 3", "Item 4"}));
+
+        jLabel3.setText("Join type:");
+
+        jLabel4.setText("Join on:");
+
+        jTextField1.setText("");
+        jTextField1.setMinimumSize(new java.awt.Dimension(60, 21));
+        jTextField1.setPreferredSize(new java.awt.Dimension(60, 25));
+
+        jLabel5.setText("User Query:");
+
+        jTextField2.setFont(new java.awt.Font("Times New Roman", 0, 12)); // NOI18N
+        jTextField2.setText("Type customized query here:");
+        jTextField2.setPreferredSize(new java.awt.Dimension(148, 30));
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+                jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jLabel5)
+                                        .addGroup(jPanel4Layout.createSequentialGroup()
+                                                .addComponent(jLabel3)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                .addComponent(jLabel4)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel4Layout.setVerticalGroup(
+                jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jLabel3)
+                                .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabel4)
+                                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel5)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(18, Short.MAX_VALUE))
+        );
+
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+                new Object[][]{
+                    {null, null, null, null},
+                    {null, null, null, null},
+                    {null, null, null, null},
+                    {null, null, null, null}
+                },
+                new String[]{
+                    "Title 1", "Title 2", "Title 3", "Title 4"
+                }
+        ));
+        jScrollPane1.setViewportView(jTable1);
+
+        jButton5.setFont(new java.awt.Font("Times New Roman", 0, 12)); // NOI18N
+        jButton5.setText("Generate pivot table");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
+
+        jButton4.setText("Merge Tables");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
+
+        jScrollPane2.setMaximumSize(new java.awt.Dimension(219, 102));
+        jScrollPane2.getViewport().setPreferredSize(new java.awt.Dimension(219, 102));
+
+        jPanel3.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+                jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGap(0, 217, Short.MAX_VALUE)
+        );
+        jPanel3Layout.setVerticalGroup(
+                jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGap(0, 101, Short.MAX_VALUE)
+        );
+
+        jScrollPane2.setViewportView(jPanel3);
+
+        jButton6.setText("Execute query");
+        jButton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton6ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(jLabel2))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                        .addComponent(jScrollPane1)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(jButton4)
+                                                .addComponent(jButton6))))
+                        .addContainerGap(39, Short.MAX_VALUE))
+        );
+
+        layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[]{jButton4, jButton5, jButton6});
+
+        layout.setVerticalGroup(
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                        .addComponent(jLabel2)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jButton4)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jButton6)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(31, 31, 31))
+        );
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // "show table" button for displaying content of table
+        ArrayList<String> sb = new ArrayList<String>();
+        if (databaseServer == 0) {
+            sb = SQLServerDatabase_obj.showTable(database_con, tables[jComboBox1.getSelectedIndex()]);
+        } else {
+            sb = MySQLDatabase_obj.showTable(database_con, tables[jComboBox1.getSelectedIndex()]);
+        }
+        ArrayList<String> sb2 = new ArrayList<String>();
+        StringBuilder builder = new StringBuilder();
+        for (String i : sb) {
+            if (!"\n".equals(i)) {
+                builder.append(i);
+            } else {
+                sb2.add(builder.toString().replaceAll(";$", ""));
+                builder = new StringBuilder();
+            }
+        }
+        if (sb2.get(0).toString().split(";").length > 0) {
+            int columnSize = sb2.get(0).toString().split(";").length;
+            String[][] tablesArray = new String[sb2.size()][columnSize];
+            for (int k = 0; k < sb2.size(); k++) {
+                tablesArray[k] = sb2.get(k).toString().split(";");
+            }
+            tableDisplay = tablesArray;
+        }
+
+        diaplay2D_data = tableDisplay;
+        String[] tableColTitle3 = new String[diaplay2D_data[0].length];
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(diaplay2D_data, tableColTitle3));
+
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // display table schema:
+        ArrayList<String> sb = new ArrayList<String>();
+        if (databaseServer == 0) {
+            sb = SQLServerDatabase_obj.showTableSchema(database_con, tables[jComboBox1.getSelectedIndex()]);
+        } else {
+            sb = MySQLDatabase_obj.showTableSchema(database_con, tables[jComboBox1.getSelectedIndex()]);
+        }
+        ArrayList<String> sb2 = new ArrayList<String>();
+        StringBuilder builder = new StringBuilder();
+        for (String i : sb) {
+            if (!"\n".equals(i)) {
+                builder.append(i);
+            } else {
+                sb2.add(builder.toString().replaceAll(";$", ""));
+                builder = new StringBuilder();
+            }
+        }
+        int columnSize = sb2.get(0).toString().split(";").length;
+        String[][] tablesArray = new String[sb2.size()][columnSize];
+        for (int k = 0; k < sb2.size(); k++) {
+            tablesArray[k] = sb2.get(k).toString().split(";");
+        }
+        tableSchema = tablesArray;
+        diaplay2D_data = tableSchema;
+        // diaplay data to the jTable1 obj.
+        String[] tableColTitle3 = new String[diaplay2D_data[0].length];
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(diaplay2D_data, tableColTitle3));
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        // "generate pivot Table" button
+        Swing.dataSource = "Database";
+        printCsvDoc(diaplay2D_data, "databaseToPivot");
+        inputFileName = "databaseToPivot.csv";
+        // pop up the main pivot table window:
+        JFrame pivotFrame = new Swing();
+        pivotFrame.pack();
+        pivotFrame.setLocationRelativeTo(null);
+        pivotFrame.setVisible(true);
+        dispose();
+    }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        // "show all" button for display all the tables
+        String[][] displayTables = new String[tables.length][1];
+        for (int i = 0; i < tables.length; i++) {
+            displayTables[i][0] = tables[i];
+        }
+        diaplay2D_data = displayTables;
+        String[] tableColTitle3 = new String[diaplay2D_data[0].length];
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(diaplay2D_data, tableColTitle3));
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        // "Merge Tables" button
+        // constructing table names for joining
+        StringBuilder join_sb = new StringBuilder();
+        for (int i = 0; i < joinFieldSelection.length; i++) {
+            join_sb.append(tables[joinFieldSelection[i]]);
+            join_sb.append(" ");
+        }
+        String join_Tables = join_sb.toString().trim();
+        //joinFieldSelection
+        ArrayList<String> sb = new ArrayList<String>();
+        // checking join type
+        String joinType = "";
+        if (jComboBox2.getSelectedIndex() == 0) {
+            joinType = "join";
+        } else if (jComboBox2.getSelectedIndex() == 1) {
+            joinType = "outerjoin";
+        }
+        try {
+            if(databaseServer==0){
+            sb = SQLServerDatabase_obj.outputJoinedTable(database_con, join_Tables, joinType, jTextField1.getText());
+            } else{
+               sb = MySQLDatabase_obj.outputJoinedTable(database_con, join_Tables, joinType, jTextField1.getText()); 
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(SelectDatabaseTable.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        ArrayList<String> sb2 = new ArrayList<String>();
+        StringBuilder builder = new StringBuilder();
+        for (String i : sb) {
+            if (!"\n".equals(i)) {
+                builder.append(i);
+            } else {
+                sb2.add(builder.toString().replaceAll(";$", ""));
+                builder = new StringBuilder();
+            }
+        }
+        int columnSize = sb2.get(0).toString().split(";").length;
+        String[][] tablesArray = new String[sb2.size()][columnSize];
+        for (int k = 0; k < sb2.size(); k++) {
+            tablesArray[k] = sb2.get(k).toString().split(";");
+        }
+        tableDisplay = tablesArray;
+        diaplay2D_data = tableDisplay;
+        // diaplay data to the jTable1 obj.
+        String[] tableColTitle3 = new String[diaplay2D_data[0].length];
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(diaplay2D_data, tableColTitle3));
+    }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+        // user defined query:
+        String userQuery = jTextField2.getText();
+        ArrayList<String> sb = new ArrayList<String>();
+        ArrayList<String> sb2 = new ArrayList<String>();
+        StringBuilder builder = new StringBuilder();
+        try {
+            if(databaseServer==0){
+                sb = SQLServerDatabase_obj.executeQuery(database_con, userQuery);
+            } else{
+                sb = MySQLDatabase_obj.executeQuery(database_con, userQuery);
+            }
+            //sb.removeAll(Arrays.asList("", null, "\n"));
+            for (String i : sb) {
+                if (!"\n".equals(i)) {
+                    builder.append(i);
+                } else {
+                    sb2.add(builder.toString().replaceAll(";$", ""));
+                    builder = new StringBuilder();
+                }
+            }
+
+            if (sb2.get(0).toString().split(";").length > 0) {
+                int columnSize = sb2.get(0).toString().split(";").length;
+                String[][] tablesArray = new String[sb2.size()][columnSize];
+                for (int k = 0; k < sb2.size(); k++) {
+                    tablesArray[k] = sb2.get(k).toString().split(";");
+                }
+                tableDisplay = tablesArray;
+            }
+
+            diaplay2D_data = tableDisplay;
+            String[] tableColTitle3 = new String[diaplay2D_data[0].length];
+            jTable1.setModel(new javax.swing.table.DefaultTableModel(diaplay2D_data, tableColTitle3));
+
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_jButton6ActionPerformed
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
+    private javax.swing.JButton jButton5;
+    private javax.swing.JButton jButton6;
+    private javax.swing.JComboBox jComboBox1;
+    private javax.swing.JComboBox jComboBox2;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JTable jTable1;
+    private javax.swing.JTextField jTextField1;
+    private javax.swing.JTextField jTextField2;
+	// End of variables declaration//GEN-END:variables
+
+
+	    public static void printCsvDoc(String[][] input,String name){
+	            String fileName = name+".csv";
+	            try {
+	                    PrintWriter pw = new PrintWriter(new File(fileName));	//printing object writing into output.csv
+	                    for(int i=0;i<input.length;i++){
+	                        for(int j=0;j<input[0].length;j++){
+	                            String singleInput = "\""+input[i][j]+"\"";
+	                            pw.print( singleInput+ ",");
+	                        }
+	                        pw.print("\n");
+	                    }
+	                    pw.close();  //close printer
+	                } catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	        }
+	   
+	
+}
